@@ -3,79 +3,100 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Item-->
+        <!--Favorites-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Weathery" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="Favorites" customModule="Weathery" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="Background"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="1kF-A2-RCp"/>
+                    <tabBarItem key="tabBarItem" title="" image="heart" catalog="system" id="1kF-A2-RCp"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="999.23664122137404" y="3.5211267605633805"/>
+            <point key="canvasLocation" x="998" y="4"/>
         </scene>
-        <!--Item-->
+        <!--Search-->
         <scene sceneID="Xqd-99-a57">
             <objects>
-                <viewController id="RS0-DH-OlA" sceneMemberID="viewController">
+                <viewController id="RS0-DH-OlA" customClass="Search" customModule="Weathery" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="GmY-5h-9oa">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="GSv-Ac-Tip"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="Background"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="vQQ-fl-vJk"/>
+                    <tabBarItem key="tabBarItem" title="" image="magnifyingglass" catalog="system" id="vQQ-fl-vJk"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9So-vi-LXg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="999" y="736"/>
         </scene>
-        <!--Item-->
-        <scene sceneID="yYd-y1-Grc">
-            <objects>
-                <viewController id="m4F-Na-HKk" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="wbb-42-t4X">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="ZjF-kX-0sc"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="qZu-6s-kKx"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Jjj-k9-yw2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1904" y="733"/>
-        </scene>
-        <!--Item-->
+        <!--Weather-->
         <scene sceneID="YAK-7g-yYJ">
             <objects>
-                <viewController id="JaD-SV-Nn2" sceneMemberID="viewController">
+                <viewController id="JaD-SV-Nn2" customClass="Weather" customModule="Weathery" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="VeM-LL-NKI">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Şehir" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="feW-Pd-ig3">
+                                <rect key="frame" x="150" y="69" width="93" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <color key="textColor" name="TextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Derece I" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JOy-nB-4oy">
+                                <rect key="frame" x="100" y="105" width="93" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <color key="textColor" name="TextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="hava temizliği" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oie-Z0-ASK">
+                                <rect key="frame" x="200" y="105" width="113" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <color key="textColor" name="TextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="TLx-uf-L5y"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="Background"/>
+                        <constraints>
+                            <constraint firstItem="TLx-uf-L5y" firstAttribute="trailing" secondItem="feW-Pd-ig3" secondAttribute="trailing" constant="150" id="3Ny-j1-VL6"/>
+                            <constraint firstItem="Oie-Z0-ASK" firstAttribute="top" secondItem="feW-Pd-ig3" secondAttribute="bottom" constant="6" id="Dt4-9e-a9c"/>
+                            <constraint firstItem="TLx-uf-L5y" firstAttribute="trailing" secondItem="JOy-nB-4oy" secondAttribute="trailing" constant="200" id="OOo-TZ-JQ2"/>
+                            <constraint firstItem="JOy-nB-4oy" firstAttribute="top" secondItem="feW-Pd-ig3" secondAttribute="bottom" constant="6" id="V8I-1d-i1O"/>
+                            <constraint firstItem="feW-Pd-ig3" firstAttribute="leading" secondItem="TLx-uf-L5y" secondAttribute="leading" constant="150" id="VRC-GC-6lR"/>
+                            <constraint firstItem="TLx-uf-L5y" firstAttribute="trailing" secondItem="Oie-Z0-ASK" secondAttribute="trailing" constant="80" id="XWc-dn-Gva"/>
+                            <constraint firstItem="JOy-nB-4oy" firstAttribute="leading" secondItem="TLx-uf-L5y" secondAttribute="leading" constant="100" id="eJq-0H-Wpr"/>
+                            <constraint firstItem="feW-Pd-ig3" firstAttribute="top" secondItem="TLx-uf-L5y" secondAttribute="top" constant="10" id="gHX-1g-Chn"/>
+                            <constraint firstItem="feW-Pd-ig3" firstAttribute="centerX" secondItem="VeM-LL-NKI" secondAttribute="centerX" id="mCi-YA-W4x"/>
+                            <constraint firstItem="JOy-nB-4oy" firstAttribute="top" secondItem="feW-Pd-ig3" secondAttribute="bottom" constant="6" id="qRg-r4-55M"/>
+                            <constraint firstItem="Oie-Z0-ASK" firstAttribute="leading" secondItem="JOy-nB-4oy" secondAttribute="trailing" constant="7" id="rJf-oP-hvO"/>
+                        </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="lCB-P3-44C"/>
+                    <tabBarItem key="tabBarItem" title="" image="house" catalog="system" id="lCB-P3-44C"/>
+                    <connections>
+                        <outlet property="airLabel" destination="Oie-Z0-ASK" id="ZTm-w0-Srk"/>
+                        <outlet property="cityLabel" destination="feW-Pd-ig3" id="M8a-a0-aJg"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MAx-cz-jox" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1849" y="11"/>
+            <point key="canvasLocation" x="2061.8320610687024" y="3.5211267605633805"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Custom Tab Bar Controller-->
         <scene sceneID="GFL-Nf-maE">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="9oV-s1-nae" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="CustomTabBarController" automaticallyAdjustsScrollViewInsets="NO" id="9oV-s1-nae" customClass="CustomTabBarController" customModule="Weathery" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Uqo-4E-yZW">
                         <autoresizingMask key="autoresizingMask"/>
@@ -85,7 +106,6 @@
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="TRV-KN-ara"/>
                         <segue destination="JaD-SV-Nn2" kind="relationship" relationship="viewControllers" id="LQv-vS-16U"/>
                         <segue destination="RS0-DH-OlA" kind="relationship" relationship="viewControllers" id="KZb-HJ-wIe"/>
-                        <segue destination="m4F-Na-HKk" kind="relationship" relationship="viewControllers" id="hzp-A8-1Or"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wLs-Gq-EHd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -94,8 +114,14 @@
         </scene>
     </scenes>
     <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
+        <image name="heart" catalog="system" width="128" height="107"/>
+        <image name="house" catalog="system" width="128" height="104"/>
+        <image name="magnifyingglass" catalog="system" width="128" height="117"/>
+        <namedColor name="Background">
+            <color red="0.14120847870469588" green="0.085350181432554129" blue="0.39710367217506326" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+        </namedColor>
+        <namedColor name="TextColor">
+            <color red="0.99999994039535522" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>
