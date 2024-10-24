@@ -14,6 +14,7 @@ class Weathers {
     var airName : String?
     var degree : Int?
     
+    
     init() {
         
     }
