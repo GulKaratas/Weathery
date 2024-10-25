@@ -40,17 +40,33 @@ struct DailyWeather: Codable {
 }
 
 // Hava kalitesi verilerini modellemek için yapılar
-struct AirQuality: Codable {
-    let list: [AirQualityData]
-}
-
 struct AirQualityData: Codable {
-    let main: MainPollution
+    let list: [AirQualityList]
+
+    struct AirQualityList: Codable {
+        let main: MainPollution
+        let components: Components
+        let dt: Int
+
+        struct MainPollution: Codable {
+            let aqi: Int // Air Quality Index
+        }
+
+        struct Components: Codable {
+            let co: Double
+            let no: Double
+            let no2: Double
+            let o3: Double
+            let so2: Double
+            let pm2_5: Double
+            let pm10: Double
+            let nh3: Double
+        }
+    }
 }
 
-struct MainPollution: Codable {
-    let aqi: Int // Hava Kalitesi İndeksi
-}
+
+
 
 // Hava durumu ve hava kalitesi verilerini yöneten sınıf
 struct WeatherManager {
@@ -92,6 +108,7 @@ struct WeatherManager {
             print("Error: \(httpResponse.statusCode) - \(errorMessage)")
             throw URLError(.badServerResponse)
         }
+
        
 
         let weeklyWeatherData = try JSONDecoder().decode(WeeklyWeatherData.self, from: data)
@@ -99,9 +116,13 @@ struct WeatherManager {
     }
 
     // Hava kalitesi verilerini getiren fonksiyon
-    func fetchAirQuality(lat: Double, lon: Double) async throws -> AirQuality {
+    // Hava kalitesi verilerini getiren fonksiyon
+    // Hava kalitesi verilerini getiren fonksiyon
+    func fetchAirQuality(lat: Double, lon: Double) async throws -> AirQualityData {
         let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74"
-        print("Hava kalitesi için lat: \(lat), lon: \(lon)") // Hata ayıklama çıktısı
+        print("Hava kalitesi için lat: \(lat), lon: \(lon)")
+
+        // URL oluşturma
         let urlString = "https://api.openweathermap.org/data/2.5/air_pollution?lat=\(lat)&lon=\(lon)&appid=\(apiKey)"
         
         guard let url = URL(string: urlString) else {
@@ -114,7 +135,6 @@ struct WeatherManager {
         // Yanıtın içeriğini yazdırın
         print(String(data: data, encoding: .utf8) ?? "Veri yok")
 
-
         // Yanıtı HTTPURLResponse olarak kontrol edin
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Yanıt geçersiz"])
@@ -123,12 +143,12 @@ struct WeatherManager {
         // HTTP yanıt durumunu kontrol edin
         guard httpResponse.statusCode == 200 else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
-            print("Hava kalitesi alırken hata: \(httpResponse.statusCode) - \(errorMessage)") // Hata ayıklama çıktısı
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Hava kalitesi verisi alırken hata"])
+            print("Hava kalitesi alırken hata: \(httpResponse.statusCode) - \(errorMessage)")
+            throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Hava kalitesi verisi alırken hata: \(errorMessage)"])
         }
 
         // JSON verisini çözümleyin
-        let airQuality = try JSONDecoder().decode(AirQuality.self, from: data)
+        let airQuality = try JSONDecoder().decode(AirQualityData.self, from: data)
         return airQuality
     }
 

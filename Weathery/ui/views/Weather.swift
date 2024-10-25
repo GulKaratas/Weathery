@@ -3,8 +3,8 @@ import CoreLocation
 
 class Weather: UIViewController, CLLocationManagerDelegate {
     
+    @IBOutlet weak var airLabel: UILabel!
     @IBOutlet weak var weatherTableView: UITableView!
-    @IBOutlet weak var weatherDetailsCollectionView: UICollectionView!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var degreeLabel: UILabel!
     @IBOutlet weak var weatherCollectionView: UICollectionView!
@@ -14,8 +14,21 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     var weatherManager = WeatherManager()
     var hourlyWeatherData: [HourlyWeather] = []
     var dailyWeatherData: [DailyWeather] = []
+ 
+    let airQualityProperties = [
+        ("Hava Kalitesi İndeksi (AQI)", "AQI: "),
+        ("Rüzgar Hızı", "Rüzgar Hızı: "),
+        ("Karbonmonoksit (CO)", "CO: "),
+        ("Azot Dioksit (NO2)", "NO2: "),
+        ("Ozon (O3)", "O3: "),
+        ("Partikül Madde 10 (PM10)", "PM10: "),
+        ("Partikül Madde 2.5 (PM2.5)", "PM2.5: "),
+        ("Kükürt Dioksit (SO2)", "SO2: ")
+    ]
+
     
-    var airQualityData: AirQuality?
+    // Hava kalitesi verilerini yöneten bir yapı oluşturun
+    var airQualityData: AirQualityData?
 
     private let defaultIcon = "defaultIcon"
     
@@ -30,7 +43,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         weatherTableView.delegate = self
         weatherTableView.dataSource = self
         
-        
+        weatherTableView.separatorColor = UIColor(named: "Background")
         
         if let layout = weatherCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal // Horizontal scrolling
@@ -87,7 +100,6 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         }
     }
 
-
     func setupSegmentedControl() {
         segmentedControl.backgroundColor = .clear
         segmentedControl.selectedSegmentTintColor = UIColor(named: "BorderColor")
@@ -105,12 +117,14 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         checkLocationAuthorization()
     }
+
     func iconURL(iconName: String) -> URL? {
-           let baseURL = "https://openweathermap.org/img/wn/"
-           let iconSize = "@2x.png" // Boyutu ihtiyacınıza göre ayarlayabilirsiniz.
-           let fullURL = baseURL + iconName + iconSize
-           return URL(string: fullURL)
-       }
+        let baseURL = "https://openweathermap.org/img/wn/"
+        let iconSize = "@2x.png" // Boyutu ihtiyacınıza göre ayarlayabilirsiniz.
+        let fullURL = baseURL + iconName + iconSize
+        return URL(string: fullURL)
+    }
+
     func fetchAirQualityData(lat: Double, lon: Double) {
         Task {
             do {
@@ -123,7 +137,6 @@ class Weather: UIViewController, CLLocationManagerDelegate {
             }
         }
     }
-
     
     func checkLocationAuthorization() {
         let status = CLLocationManager.authorizationStatus()
@@ -149,22 +162,79 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         let lat = location.coordinate.latitude
         let lon = location.coordinate.longitude
         
-        // Enlem ve boylam değerlerini kontrol et
-        if isValidCoordinate(lat: lat, lon: lon) {
-            Task {
-                do {
-                    self.hourlyWeatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
-                    DispatchQueue.main.async {
-                        self.degreeLabel.text = "\(Int(self.hourlyWeatherData.first?.main.temp ?? 0)) °"
-                        self.updateUIForCurrentDay()
-                        self.weatherCollectionView.reloadData()
-                    }
-                } catch {
-                    print("Error fetching weather data: \(error.localizedDescription)")
+        // Hava durumu verilerini al
+        fetchWeatherData(lat: lat, lon: lon)
+        
+        // Hava kalitesi verilerini al
+        fetchAirQualityData(lat: lat, lon: lon)
+        
+        // Şehir adını al
+        reverseGeocodeLocation(location: location)
+    }
+    
+    func fetchWeatherData(lat: Double, lon: Double) {
+        Task {
+            do {
+                self.hourlyWeatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
+                
+                // Hava durumu açıklamasını alın ve Türkçeye çevirin
+                let weatherCondition = self.hourlyWeatherData.first?.weather.first?.description ?? "N/A"
+                let translatedCondition: String
+                
+                switch weatherCondition.lowercased() {
+                case "clear sky":
+                    translatedCondition = "Açık"
+                case "few clouds":
+                    translatedCondition = "Az Bulutlu"
+                case "scattered clouds":
+                    translatedCondition = "Dağınık Bulutlu"
+                case "broken clouds":
+                    translatedCondition = "Parçalı Bulutlu"
+                case "shower rain":
+                    translatedCondition = "Sağanak Yağışlı"
+                case "rain":
+                    translatedCondition = "Yağmurlu"
+                case "thunderstorm":
+                    translatedCondition = "Gök Gürültülü Fırtına"
+                case "snow":
+                    translatedCondition = "Karlı"
+                case "mist":
+                    translatedCondition = "Sisli"
+                case "light rain":
+                    translatedCondition = "Hafif Yağmurlu"
+                default:
+                    translatedCondition = weatherCondition.capitalized
                 }
+                
+                DispatchQueue.main.async {
+                    self.degreeLabel.text = "\(Int(self.hourlyWeatherData.first?.main.temp ?? 0)) °"
+                    self.airLabel.text = translatedCondition // Hava durumunu Türkçeye çevirilmiş olarak göster
+                    self.updateUIForCurrentDay()
+                    self.weatherCollectionView.reloadData()
+                }
+            } catch {
+                print("Hava durumu verileri alınırken hata oluştu: \(error.localizedDescription)")
             }
-        } else {
-            print("Geçersiz konum: lat: \(lat), lon: \(lon)")
+        }
+    }
+
+
+    func reverseGeocodeLocation(location: CLLocation) {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
+            if let error = error {
+                print("Error in reverse geocoding: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let placemark = placemarks?.first, let city = placemark.locality else {
+                print("City not found")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self?.cityLabel.text = city
+            }
         }
     }
 
@@ -172,7 +242,6 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     func isValidCoordinate(lat: Double, lon: Double) -> Bool {
         return (lat >= -90 && lat <= 90) && (lon >= -180 && lon <= 180)
     }
-
 
     func updateUIForCurrentDay() {
         // Update UI for current day
@@ -192,9 +261,8 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         checkLocationAuthorization()
     }
-    
-    
 }
+
 
 extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -288,61 +356,102 @@ extension Weather: UICollectionViewDelegateFlowLayout {
 }
 
 extension Weather: UITableViewDelegate, UITableViewDataSource {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("Air Quality Data Count: \(airQualityData?.list.count ?? 0)")
-            return airQualityData?.list.count ?? 0    }
-    
+        return airQualityProperties.count
+    }
+        
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "WeatherDetailsCell", for: indexPath) as! WeatherDetailsCell
-
-        // Check if air quality data is available
-        guard let airQualityEntry = airQualityData?.list[indexPath.row] else {
+        
+        guard let airQualityData = airQualityData, let airQuality = airQualityData.list.first else {
             cell.nameLabel.text = "Veri mevcut değil"
             cell.detailsLabel.text = ""
             cell.detailsImageView.image = nil
-            return cell // Return empty cell if no data
+            return cell
         }
-
-        // Set up the cell with the air quality data
-        cell.nameLabel.text = "AQI Seviyesi: \(airQualityEntry.main.aqi)"
-        cell.detailsLabel.text = "Hava Kalitesi İndeksi: \(airQualityEntry.main.aqi)"
         
-        // Get the icon for the AQI level
-        let iconName = getIconForAQI(aqi: airQualityEntry.main.aqi)
-        cell.detailsImageView.image = UIImage(named: iconName)
-
+        cell.backgroundColor = UIColor(named: "Background")
+        cell.cellBackgroundView.layer.cornerRadius = 10.0
+        cell.selectionStyle = .none
+        cell.cellBackgroundView.layer.borderWidth = 1.0
+        
+        let (propertyName, label) = airQualityProperties[indexPath.row]
+        cell.nameLabel.text = "\(propertyName)"
+        
+        // Displaying custom images for air quality and wind speed
+        switch indexPath.row {
+        case 0: // Air Quality
+            cell.detailsLabel.text = "\(label)\(airQuality.main.aqi)"
+            cell.detailsImageView.image = UIImage(named: "havaKalitesi") // Local image for air quality
+        case 1: // Wind Speed
+            cell.detailsLabel.text = "\(label)\(10) m/s"
+            cell.detailsImageView.image = UIImage(named: "ruzgarHizi") // Local image for wind speed
+        case 2:
+            cell.detailsLabel.text = "\(label)\(airQuality.components.co) µg/m³"
+            loadIcon(for: "co", into: cell)
+        case 3:
+            cell.detailsLabel.text = "\(label)\(airQuality.components.no2) µg/m³"
+            loadIcon(for: "no2", into: cell)
+        case 4:
+            cell.detailsLabel.text = "\(label)\(airQuality.components.o3) µg/m³"
+            loadIcon(for: "o3", into: cell)
+        case 5:
+            cell.detailsLabel.text = "\(label)\(airQuality.components.pm10) µg/m³"
+            loadIcon(for: "pm10", into: cell)
+        case 6:
+            cell.detailsLabel.text = "\(label)\(airQuality.components.pm2_5) µg/m³"
+            loadIcon(for: "pm2_5", into: cell)
+        case 7:
+            cell.detailsLabel.text = "\(label)\(airQuality.components.so2) µg/m³"
+            loadIcon(for: "so2", into: cell)
+        default:
+            cell.detailsLabel.text = "Veri mevcut değil"
+            cell.detailsImageView.image = nil
+        }
+        
         return cell
     }
-
-    func validateCoordinates(lat: String, lon: String) -> (Double, Double)? {
-        guard let latitude = Double(lat), let longitude = Double(lon) else {
-            print("Geçersiz koordinat girişi")
-            return nil
+    
+    // Helper function to load icon for other components
+    private func loadIcon(for component: String, into cell: WeatherDetailsCell) {
+        if let iconURL = getIconURL(for: component) {
+            loadImage(from: iconURL) { image in
+                DispatchQueue.main.async {
+                    cell.detailsImageView.image = image
+                }
+            }
+        } else {
+            cell.detailsImageView.image = nil
         }
-        
-        guard (latitude >= -90 && latitude <= 90) && (longitude >= -180 && longitude <= 180) else {
-            print("Koordinatlar sınırların dışında")
-            return nil
-        }
-
-        return (latitude, longitude)
     }
-    // AQI seviyesine göre simge almak için yardımcı fonksiyon
-    private func getIconForAQI(aqi: Int) -> String {
-        switch aqi {
-        case 1:
-            return "good" // Replace with your actual icon names
-        case 2:
-            return "moderate"
-        case 3:
-            return "unhealthySensitive"
-        case 4:
-            return "unhealthy"
-        case 5:
-            return "veryUnhealthy"
+    
+    private func getIconURL(for component: String) -> URL? {
+        let iconCode: String
+        switch component {
+        case "co", "so2", "no2":
+            iconCode = "50d"
+        case "pm10", "pm2_5":
+            iconCode = "50d"
+        case "o3":
+            iconCode = "01d"
+        case "wind":
+            iconCode = "wind_icon_code" // Placeholder for a wind icon code
+        case "aqi":
+            iconCode = "aqi_icon_code" // Placeholder for an AQI icon code
         default:
-            return "hazardous"
+            iconCode = "01d"
         }
+        return URL(string: "https://openweathermap.org/img/wn/\(iconCode)@2x.png")
+    }
+    
+    private func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let data = data, let image = UIImage(data: data) {
+                completion(image)
+            } else {
+                completion(nil)
+            }
+        }.resume()
     }
 }
