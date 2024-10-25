@@ -7,15 +7,17 @@
 
 import UIKit
 
-class Search: UIViewController {
+class Search: UIViewController , UISearchBarDelegate{
 
+    @IBOutlet weak var searcBar: UISearchBar!
+    
+    @IBOutlet weak var searchTableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
        
     }
     
-
     
 
 }

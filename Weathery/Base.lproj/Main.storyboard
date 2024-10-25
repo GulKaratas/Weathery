@@ -33,10 +33,36 @@
                     <view key="view" contentMode="scaleToFill" id="GmY-5h-9oa">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="xS2-LB-4Gm">
+                                <rect key="frame" x="0.0" y="109" width="393" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="RS0-DH-OlA" id="kX2-EQ-FGY"/>
+                                </connections>
+                            </searchBar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="bDq-ar-Nlp">
+                                <rect key="frame" x="0.0" y="165" width="393" height="604"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="GSv-Ac-Tip"/>
                         <color key="backgroundColor" name="Background"/>
+                        <constraints>
+                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="leading" secondItem="GSv-Ac-Tip" secondAttribute="leading" id="4AK-ca-GVD"/>
+                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="top" secondItem="GSv-Ac-Tip" secondAttribute="top" constant="50" id="QLU-Ls-icY"/>
+                            <constraint firstItem="GSv-Ac-Tip" firstAttribute="trailing" secondItem="bDq-ar-Nlp" secondAttribute="trailing" id="SC2-Ur-2N7"/>
+                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="trailing" secondItem="GSv-Ac-Tip" secondAttribute="trailing" id="lyZ-4A-z6c"/>
+                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="leading" secondItem="GSv-Ac-Tip" secondAttribute="leading" id="pQ8-0x-Kh5"/>
+                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="top" secondItem="xS2-LB-4Gm" secondAttribute="bottom" id="vxf-UT-yeB"/>
+                            <constraint firstItem="GSv-Ac-Tip" firstAttribute="bottom" secondItem="bDq-ar-Nlp" secondAttribute="bottom" id="zMd-iv-ele"/>
+                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="magnifyingglass" catalog="system" id="vQQ-fl-vJk"/>
+                    <connections>
+                        <outlet property="searcBar" destination="xS2-LB-4Gm" id="2Jb-v2-YWK"/>
+                        <outlet property="searchTableView" destination="bDq-ar-Nlp" id="UF9-Tk-nX1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9So-vi-LXg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -274,7 +300,7 @@
             <color red="0.14100000262260437" green="0.086000002920627594" blue="0.39599999785423279" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
         <namedColor name="CellColor">
-            <color red="0.096000000834465027" green="0.037000000476837158" blue="0.28700000047683716" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <color red="0.10199999809265137" green="0.063000001013278961" blue="0.29899999499320984" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
         <namedColor name="TextColor">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
