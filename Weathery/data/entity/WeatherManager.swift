@@ -1,6 +1,8 @@
 import Foundation
 
 
+
+
 struct WeatherData: Codable {
     let list: [HourlyWeather]
 }

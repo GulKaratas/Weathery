@@ -50,16 +50,17 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         weatherTableView.separatorColor = UIColor(named: "Background")
         
         if let selectedCity = selectedCity {
-                Task {
-                    do {
-                        let coordinates = try await fetchCoordinates(for: selectedCity)
-                        try await fetchWeatherData(for: coordinates.lat, lon: coordinates.lon)
-                        try await fetchAirQualityData(lat: coordinates.lat, lon: coordinates.lon)
-                    } catch {
-                        print("Hata: \(error.localizedDescription)")
-                    }
-                }
-            }
+               print("Seçilen şehir: \(selectedCity)") // Debugging output
+               Task {
+                   do {
+                       let coordinates = try await fetchCoordinates(for: selectedCity)
+                       try await fetchWeatherData(for: coordinates.lat, lon: coordinates.lon)
+                   } catch {
+                       print("Hata: \(error.localizedDescription)")
+              
+                   }
+               }
+           }
         if let layout = weatherCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal // Horizontal scrolling
             layout.minimumLineSpacing = 10 // Spacing between cells
@@ -69,23 +70,8 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        if let selectedCity = selectedCity {
-            Task {
-                do {
-                    let coordinates = try await fetchCoordinates(for: selectedCity)
-                    try await fetchWeatherData(for: coordinates.lat, lon: coordinates.lon)
-                    
-                    DispatchQueue.main.async {
-                        self.weatherTableView.reloadData() // Tabloyu güncelleyerek yeni veriyi gösterin
-                    }
-                } catch {
-                    print("Hata: \(error.localizedDescription)")
-                }
-            }
-        }
+        print("Weather view controller açıldı: \(selectedCity ?? "")")
     }
-
 
     
     override func viewDidLayoutSubviews() {
@@ -226,9 +212,19 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         return URL(string: fullURL)
     }
 
-  
-
-
+    func fetchAirQualityData(lat: Double, lon: Double) {
+        Task {
+            do {
+                self.airQualityData = try await weatherManager.fetchAirQuality(lat: lat, lon: lon)
+                DispatchQueue.main.async {
+                    self.weatherTableView.reloadData()
+                }
+            } catch {
+                print("Error fetching air quality data: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func checkLocationAuthorization() {
         let status = CLLocationManager.authorizationStatus()
         
@@ -263,27 +259,6 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         reverseGeocodeLocation(location: location)
     }
     
-    func fetchAirQualityData(lat: Double, lon: Double) {
-        Task {
-            do {
-                self.airQualityData = try await weatherManager.fetchAirQuality(lat: lat, lon: lon)
-                
-                // AQI verisini al
-                DispatchQueue.main.async {
-                    if let airQualityData = self.airQualityData {
-                        if let aqi = airQualityData.list.first?.main.aqi {
-                            print("AQI: \(aqi)")
-                            // AQI'yi burada güncellemiyoruz
-                        }
-                    }
-                    self.weatherTableView.reloadData()
-                }
-            } catch {
-                print("Error fetching air quality data: \(error.localizedDescription)")
-            }
-        }
-    }
-
     func fetchWeatherData(lat: Double, lon: Double) {
         Task {
             do {
@@ -294,30 +269,28 @@ class Weather: UIViewController, CLLocationManagerDelegate {
                 let translatedCondition: String
                 
                 switch weatherCondition.lowercased() {
-                    case "clear sky":
-                        translatedCondition = "Açık"
-                    case "few clouds":
-                        translatedCondition = "Az Bulutlu"
-                    case "scattered clouds":
-                        translatedCondition = "Dağınık Bulutlu"
-                    case "broken clouds":
-                        translatedCondition = "Parçalı Bulutlu"
-                    case "shower rain":
-                        translatedCondition = "Sağanak Yağışlı"
-                    case "rain":
-                        translatedCondition = "Yağmurlu"
-                    case "thunderstorm":
-                        translatedCondition = "Gök Gürültülü Fırtına"
-                    case "snow":
-                        translatedCondition = "Karlı"
-                    case "mist":
-                        translatedCondition = "Sisli"
-                    case "light rain":
-                        translatedCondition = "Hafif Yağmurlu"
-                    case "overcast clouds":
-                        translatedCondition = "Kapalı Bulutlu"
-                    default:
-                        translatedCondition = weatherCondition.capitalized
+                case "clear sky":
+                    translatedCondition = "Açık"
+                case "few clouds":
+                    translatedCondition = "Az Bulutlu"
+                case "scattered clouds":
+                    translatedCondition = "Dağınık Bulutlu"
+                case "broken clouds":
+                    translatedCondition = "Parçalı Bulutlu"
+                case "shower rain":
+                    translatedCondition = "Sağanak Yağışlı"
+                case "rain":
+                    translatedCondition = "Yağmurlu"
+                case "thunderstorm":
+                    translatedCondition = "Gök Gürültülü Fırtına"
+                case "snow":
+                    translatedCondition = "Karlı"
+                case "mist":
+                    translatedCondition = "Sisli"
+                case "light rain":
+                    translatedCondition = "Hafif Yağmurlu"
+                default:
+                    translatedCondition = weatherCondition.capitalized
                 }
                 
                 DispatchQueue.main.async {
@@ -331,7 +304,6 @@ class Weather: UIViewController, CLLocationManagerDelegate {
             }
         }
     }
-
 
 
     func reverseGeocodeLocation(location: CLLocation) {
@@ -491,6 +463,7 @@ extension Weather: UITableViewDelegate, UITableViewDataSource {
         cell.cellBackgroundView.layer.cornerRadius = 10.0
         cell.selectionStyle = .none
         cell.cellBackgroundView.layer.borderWidth = 1.0
+        cell.selectionStyle = .none
         
         let (propertyName, label) = airQualityProperties[indexPath.row]
         cell.nameLabel.text = "\(propertyName)"
