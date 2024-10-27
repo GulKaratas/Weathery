@@ -92,18 +92,46 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     
 
     func fetchWeatherData(for lat: Double, lon: Double) async throws {
-           hourlyWeatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
+        // Tüm saatlik hava verilerini al
+        hourlyWeatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
 
-           // Update the UI on the main thread
-           DispatchQueue.main.async {
-               if let temp = self.hourlyWeatherData.first?.main.temp {
-                   self.degreeLabel.text = "\(Int(temp)) °"
-               }
-               self.updateCityLabel()
-               // Update other UI components as needed
-               self.weatherCollectionView.reloadData()
-           }
-       }
+        // Şu anki tarihi ve saati al
+        let now = Date()
+        let calendar = Calendar.current
+        
+        // Şu anki saati 1 saat ileriye al (örneğin, 12:30 ise 13:00 yap)
+        var nextHour = calendar.date(byAdding: .hour, value: 1, to: now)!
+        
+        // Saat başına yuvarlamak için dakika ve saniyeleri sıfırla
+        nextHour = calendar.date(bySettingHour: calendar.component(.hour, from: nextHour),
+                                  minute: 0,
+                                  second: 0,
+                                  of: nextHour)!
+
+        // 24 saat sonra hangi tarih olduğunu hesapla
+        let twentyFourHoursLater = calendar.date(byAdding: .hour, value: 24, to: nextHour)!
+        
+        // Saatlik verileri filtrele
+        hourlyWeatherData = hourlyWeatherData.filter { hourlyWeather in
+            let hourDate = Date(timeIntervalSince1970: TimeInterval(hourlyWeather.dt))
+            return hourDate >= nextHour && hourDate <= twentyFourHoursLater
+        }
+
+        // Sadece 24 saatlik veriyi tut
+        if hourlyWeatherData.count > 24 {
+            hourlyWeatherData = Array(hourlyWeatherData.prefix(24))
+        }
+
+        // UI'yı güncelle
+        DispatchQueue.main.async {
+            if let firstWeather = self.hourlyWeatherData.first {
+                self.degreeLabel.text = "\(Int(firstWeather.main.temp)) °"
+            }
+            self.updateCityLabel()
+            self.weatherCollectionView.reloadData()
+        }
+    }
+
 
     func fetchCoordinates(for cityName: String) async throws -> (lat: Double, lon: Double) {
         let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74" // Replace with your OpenWeatherMap API key
@@ -289,6 +317,8 @@ class Weather: UIViewController, CLLocationManagerDelegate {
                     translatedCondition = "Sisli"
                 case "light rain":
                     translatedCondition = "Hafif Yağmurlu"
+                case "overcast clouds ":
+                    translatedCondition = "Kapalı Bulutlu"
                 default:
                     translatedCondition = weatherCondition.capitalized
                 }
@@ -305,6 +335,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         }
     }
 
+ 
 
     func reverseGeocodeLocation(location: CLLocation) {
         let geocoder = CLGeocoder()
@@ -382,6 +413,7 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
             
             let dailyWeather = dailyWeatherData[indexPath.item]
             cell.hourlyDegreeLabel.text = "\(Int(dailyWeather.temp.day))°"
+            
             let date = Date(timeIntervalSince1970: TimeInterval(dailyWeather.dt))
             let dayFormatter = DateFormatter()
             dayFormatter.locale = Locale(identifier: "tr_TR")
@@ -397,7 +429,6 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         configureCellAppearance(cell, at: indexPath)
         return cell
     }
-    
 
     private func loadWeatherIcon(for cell: WeatherCell, from url: URL) {
         URLSession.shared.dataTask(with: url) { data, _, error in
@@ -426,13 +457,14 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         cell.layer.masksToBounds = false
     }
 
-    func formatDate(unixTime: Int) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(unixTime))
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "tr_TR")
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: date)
-    }
+func formatDate(unixTime: Int) -> String {
+    let date = Date(timeIntervalSince1970: TimeInterval(unixTime))
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "tr_TR")
+    dateFormatter.dateFormat = "HH:mm" // Saat ve dakika formatı
+    return dateFormatter.string(from: date)
+}
+
 
 
 extension Weather: UICollectionViewDelegateFlowLayout {

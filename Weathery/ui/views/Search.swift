@@ -93,6 +93,10 @@ extension Search: UITableViewDataSource, UITableViewDelegate {
             if !self.favoriteCities.contains(city) {
                 self.favoriteCities.append(city)
                 self.saveFavorites()
+                
+                // Post notification after saving the favorite
+                NotificationCenter.default.post(name: .favoriteCityAdded, object: nil)
+                
                 print("Marked \(city) as favorite.")
             }
             completionHandler(true)

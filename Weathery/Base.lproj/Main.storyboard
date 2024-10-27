@@ -3,6 +3,7 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -54,13 +55,30 @@
                                                         <constraint firstAttribute="height" constant="80" id="srL-oY-LV5"/>
                                                     </constraints>
                                                 </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nSV-sB-qmC">
+                                                    <rect key="frame" x="220" y="0.0" width="30" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="30" id="89D-Hk-t5Q"/>
+                                                        <constraint firstAttribute="height" constant="30" id="w0T-xN-zSK"/>
+                                                    </constraints>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain">
+                                                        <imageReference key="image" image="xmark.circle" catalog="system" symbolScale="small"/>
+                                                        <color key="baseForegroundColor" name="TextColor"/>
+                                                    </buttonConfiguration>
+                                                    <connections>
+                                                        <action selector="removeButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OXD-bo-b1o"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" name="Background"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="3Xx-or-MMd" secondAttribute="trailing" constant="10" id="0yZ-WV-sYx"/>
+                                                <constraint firstItem="nSV-sB-qmC" firstAttribute="top" secondItem="7Td-Rt-BlR" secondAttribute="top" id="7g4-KC-ARM"/>
                                                 <constraint firstItem="Oim-eF-4Pr" firstAttribute="leading" secondItem="7Td-Rt-BlR" secondAttribute="leading" constant="10" id="NGd-2Q-koB"/>
                                                 <constraint firstItem="hYr-xh-5ni" firstAttribute="top" secondItem="Oim-eF-4Pr" secondAttribute="bottom" constant="25" id="Ugr-OE-jUZ"/>
                                                 <constraint firstItem="hYr-xh-5ni" firstAttribute="leading" secondItem="7Td-Rt-BlR" secondAttribute="leading" constant="10" id="fjR-L3-Iwi"/>
+                                                <constraint firstAttribute="trailing" secondItem="nSV-sB-qmC" secondAttribute="trailing" id="gwh-Xy-mbz"/>
                                                 <constraint firstItem="Oim-eF-4Pr" firstAttribute="top" secondItem="7Td-Rt-BlR" secondAttribute="top" constant="10" id="lLI-Fa-AGD"/>
                                                 <constraint firstItem="3Xx-or-MMd" firstAttribute="top" secondItem="7Td-Rt-BlR" secondAttribute="top" constant="10" id="xH1-Ya-kFX"/>
                                             </constraints>
@@ -393,6 +411,7 @@
         <image name="heart" catalog="system" width="128" height="107"/>
         <image name="house" catalog="system" width="128" height="104"/>
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
+        <image name="xmark.circle" catalog="system" width="128" height="123"/>
         <namedColor name="Background">
             <color red="0.14100000262260437" green="0.086000002920627594" blue="0.39599999785423279" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
