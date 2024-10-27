@@ -5,10 +5,10 @@ class Search: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    var cities: [String] = [] // Array to hold city names
-    var filteredCities: [String] = [] // Filtered cities for search
-    var favoriteCities: [String] = [] // Array to hold favorite city names
-    
+    var cities: [String] = []
+    var filteredCities: [String] = []
+    var favoriteCities: [String] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,7 +25,7 @@ class Search: UIViewController {
         loadCities()
         loadFavorites()
     }
-    
+
     func loadCities() {
         if let path = Bundle.main.path(forResource: "cities", ofType: "json") {
             do {
@@ -55,6 +55,19 @@ class Search: UIViewController {
     
     func saveFavorites() {
         UserDefaults.standard.set(favoriteCities, forKey: "FavoriteCities")
+    }
+
+    // Function to show alert
+    func showAlert(with message: String) {
+        DispatchQueue.main.async { // Ensure it runs on the main thread
+            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            self.present(alert, animated: true)
+
+            // Dismiss the alert after 2 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                alert.dismiss(animated: true, completion: nil)
+            }
+        }
     }
 }
 
@@ -94,10 +107,13 @@ extension Search: UITableViewDataSource, UITableViewDelegate {
                 self.favoriteCities.append(city)
                 self.saveFavorites()
                 
-                // Post notification after saving the favorite
-                NotificationCenter.default.post(name: .favoriteCityAdded, object: nil)
-                
-                print("Marked \(city) as favorite.")
+                // Show alert when a city is added to favorites
+                self.showAlert(with: "\(city) favorilere eklendi.")
+                print("\(city) favorilere eklendi.")
+            } else {
+                // Show alert when trying to add a city that's already a favorite
+                self.showAlert(with: "\(city) favorilere eklenmişti.")
+                print("\(city) is already in favorites.")
             }
             completionHandler(true)
         }

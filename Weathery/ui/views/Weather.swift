@@ -134,7 +134,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
 
 
     func fetchCoordinates(for cityName: String) async throws -> (lat: Double, lon: Double) {
-        let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74" // Replace with your OpenWeatherMap API key
+        let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74" // Buraya geçerli API anahtarınızı koyun
         let encodedCityName = cityName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlString = "https://api.openweathermap.org/data/2.5/weather?q=\(encodedCityName)&appid=\(apiKey)"
         
@@ -143,8 +143,15 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         }
         
         let (data, response) = try await URLSession.shared.data(from: url)
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw URLError(.badServerResponse)
+        
+        // Hata kontrolü ekleniyor
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Geçersiz yanıt"])
+        }
+        
+        if httpResponse.statusCode != 200 {
+            let message = HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
+            throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])
         }
         
         let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
@@ -152,9 +159,11 @@ class Weather: UIViewController, CLLocationManagerDelegate {
            let lat = coord["lat"], let lon = coord["lon"] {
             return (lat, lon)
         } else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not get coordinates"])
+            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Koordinatlar alınamadı"])
         }
     }
+
+
 
     @IBAction func segmentedControlChanged(_ sender: UISegmentedControl) {
         Task {
@@ -317,7 +326,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
                     translatedCondition = "Sisli"
                 case "light rain":
                     translatedCondition = "Hafif Yağmurlu"
-                case "overcast clouds ":
+                case "Overcast Clouds ":
                     translatedCondition = "Kapalı Bulutlu"
                 default:
                     translatedCondition = weatherCondition.capitalized
@@ -392,9 +401,9 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherCell", for: indexPath) as! WeatherCell
         
         if segmentedControl.selectedSegmentIndex == 0 {
-            // Saatlik hava verisi
+            // Hourly weather data
             guard indexPath.item < hourlyWeatherData.count else {
-                return cell // Eğer dizinin boyutunu aşıyorsanız, boş bir hücre döndürün
+                return cell // Return an empty cell if the index exceeds the array
             }
             
             let hourlyWeather = hourlyWeatherData[indexPath.item]
@@ -406,18 +415,19 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
                 loadWeatherIcon(for: cell, from: iconURL)
             }
         } else {
-            // Günlük hava verisi
+            // Daily weather data
             guard indexPath.item < dailyWeatherData.count else {
-                return cell // Eğer dizinin boyutunu aşıyorsanız, boş bir hücre döndürün
+                return cell // Return an empty cell if the index exceeds the array
             }
             
             let dailyWeather = dailyWeatherData[indexPath.item]
             cell.hourlyDegreeLabel.text = "\(Int(dailyWeather.temp.day))°"
             
+            // Get the day of the week
             let date = Date(timeIntervalSince1970: TimeInterval(dailyWeather.dt))
             let dayFormatter = DateFormatter()
-            dayFormatter.locale = Locale(identifier: "tr_TR")
-            dayFormatter.dateFormat = "EEEE"
+            dayFormatter.locale = Locale(identifier: "tr_TR") // Set locale for Turkish
+            dayFormatter.dateFormat = "EEEE" // Full day name format
             cell.timeLabel.text = dayFormatter.string(from: date)
             
             let iconName = dailyWeather.weather.first?.icon ?? defaultIcon
@@ -430,6 +440,9 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         return cell
     }
 
+    // Existing loadWeatherIcon, configureCellAppearance, and formatDate methods remain unchanged.
+}
+
     private func loadWeatherIcon(for cell: WeatherCell, from url: URL) {
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let data = data, let image = UIImage(data: data) {
@@ -440,8 +453,6 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
                 print("Hata: \(error?.localizedDescription ?? "Bilinmeyen hata")")
             }
         }.resume()
-    }
-
     }
 
     private func configureCellAppearance(_ cell: WeatherCell, at indexPath: IndexPath) {
@@ -457,13 +468,13 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         cell.layer.masksToBounds = false
     }
 
-func formatDate(unixTime: Int) -> String {
-    let date = Date(timeIntervalSince1970: TimeInterval(unixTime))
-    let dateFormatter = DateFormatter()
-    dateFormatter.locale = Locale(identifier: "tr_TR")
-    dateFormatter.dateFormat = "HH:mm" // Saat ve dakika formatı
-    return dateFormatter.string(from: date)
-}
+    func formatDate(unixTime: Int) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(unixTime))
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "tr_TR")
+        dateFormatter.dateFormat = "HH:mm" // Hour and minute format
+        return dateFormatter.string(from: date)
+    }
 
 
 

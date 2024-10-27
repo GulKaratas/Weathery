@@ -1,8 +1,6 @@
 import Foundation
 
-
-
-
+// Hava durumu verilerini modellemek için yapılar
 struct WeatherData: Codable {
     let list: [HourlyWeather]
 }
@@ -22,6 +20,7 @@ struct HourlyWeather: Codable {
     }
 }
 
+// Haftalık hava durumu verilerini modellemek için yapılar
 struct WeeklyWeatherData: Codable {
     let daily: [DailyWeather]
 }
@@ -67,19 +66,21 @@ struct AirQualityData: Codable {
     }
 }
 
-
-
-
 // Hava durumu ve hava kalitesi verilerini yöneten sınıf
 struct WeatherManager {
-    // OpenWeatherMap API URL (API_KEY kendi anahtarınızla değiştirilmelidir)
-    let weatherURL = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid=2bdf7ae26311d6b4029bfe9b2e71ce74&units=metric"
-    let weeklyWeatherURL = "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude=hourly,minutely&appid=2bdf7ae26311d6b4029bfe9b2e71ce74&units=metric"
-
-
+    // OpenWeatherMap API anahtarınızı buraya ekleyin
+    let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74" 
+    
+    let weatherURL = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={apiKey}&units=metric"
+    let weeklyWeatherURL = "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude=hourly,minutely&appid={apiKey}&units=metric"
+    
     // Hava durumu verilerini getiren fonksiyon
     func fetchWeather(lat: Double, lon: Double) async throws -> [HourlyWeather] {
-        let urlString = weatherURL.replacingOccurrences(of: "{lat}", with: String(lat)).replacingOccurrences(of: "{lon}", with: String(lon))
+        let urlString = weatherURL
+            .replacingOccurrences(of: "{lat}", with: String(lat))
+            .replacingOccurrences(of: "{lon}", with: String(lon))
+            .replacingOccurrences(of: "{apiKey}", with: apiKey)
+        
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }
@@ -94,65 +95,58 @@ struct WeatherManager {
     }
     
     // Haftalık hava durumu verilerini getiren fonksiyon
+    // Haftalık hava durumu verilerini getiren fonksiyon
     func fetchWeeklyWeather(lat: Double, lon: Double) async throws -> [DailyWeather] {
-        let urlString = weeklyWeatherURL.replacingOccurrences(of: "{lat}", with: String(lat)).replacingOccurrences(of: "{lon}", with: String(lon))
+        let urlString = weeklyWeatherURL
+            .replacingOccurrences(of: "{lat}", with: String(lat))
+            .replacingOccurrences(of: "{lon}", with: String(lon))
+            .replacingOccurrences(of: "{apiKey}", with: apiKey)
+        
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }
 
         let (data, response) = try await URLSession.shared.data(from: url)
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
 
         if httpResponse.statusCode != 200 {
-            let errorMessage = String(data: data, encoding: .utf8) ?? "No data"
-            print("Error: \(httpResponse.statusCode) - \(errorMessage)")
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
+            print("Hata: \(httpResponse.statusCode) - \(errorMessage)")
             throw URLError(.badServerResponse)
         }
 
-       
+        // Yanıt verisini konsola yazdır
+        print("Yanıt Verisi: \(String(data: data, encoding: .utf8) ?? "Veri yok")")
 
         let weeklyWeatherData = try JSONDecoder().decode(WeeklyWeatherData.self, from: data)
         return weeklyWeatherData.daily
     }
 
-    // Hava kalitesi verilerini getiren fonksiyon
-    // Hava kalitesi verilerini getiren fonksiyon
+
     // Hava kalitesi verilerini getiren fonksiyon
     func fetchAirQuality(lat: Double, lon: Double) async throws -> AirQualityData {
-        let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74"
-        print("Hava kalitesi için lat: \(lat), lon: \(lon)")
-
-        // URL oluşturma
         let urlString = "https://api.openweathermap.org/data/2.5/air_pollution?lat=\(lat)&lon=\(lon)&appid=\(apiKey)"
         
         guard let url = URL(string: urlString) else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Geçersiz URL"])
         }
 
-        // URLSession'dan veri ve yanıt alın
-        let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url))
+        let (data, response) = try await URLSession.shared.data(from: url)
 
-        // Yanıtın içeriğini yazdırın
-        print(String(data: data, encoding: .utf8) ?? "Veri yok")
-
-        // Yanıtı HTTPURLResponse olarak kontrol edin
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Yanıt geçersiz"])
         }
 
-        // HTTP yanıt durumunu kontrol edin
         guard httpResponse.statusCode == 200 else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
             print("Hava kalitesi alırken hata: \(httpResponse.statusCode) - \(errorMessage)")
             throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Hava kalitesi verisi alırken hata: \(errorMessage)"])
         }
 
-        // JSON verisini çözümleyin
         let airQuality = try JSONDecoder().decode(AirQualityData.self, from: data)
         return airQuality
     }
-
-
 }

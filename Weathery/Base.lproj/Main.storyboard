@@ -119,12 +119,12 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="xS2-LB-4Gm">
-                                <rect key="frame" x="0.0" y="153" width="393" height="56"/>
+                                <rect key="frame" x="0.0" y="133" width="393" height="56"/>
                                 <color key="barTintColor" name="TextColor"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="bDq-ar-Nlp">
-                                <rect key="frame" x="0.0" y="209" width="393" height="560"/>
+                                <rect key="frame" x="0.0" y="189" width="393" height="580"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <color key="separatorColor" name="Background"/>
                                 <prototypes>
@@ -144,13 +144,13 @@
                         <viewLayoutGuide key="safeArea" id="GSv-Ac-Tip"/>
                         <color key="backgroundColor" name="Background"/>
                         <constraints>
-                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="leading" secondItem="GSv-Ac-Tip" secondAttribute="leading" id="4AK-ca-GVD"/>
-                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="top" secondItem="GSv-Ac-Tip" secondAttribute="top" constant="50" id="QLU-Ls-icY"/>
-                            <constraint firstItem="GSv-Ac-Tip" firstAttribute="trailing" secondItem="bDq-ar-Nlp" secondAttribute="trailing" id="SC2-Ur-2N7"/>
-                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="trailing" secondItem="GSv-Ac-Tip" secondAttribute="trailing" id="lyZ-4A-z6c"/>
-                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="leading" secondItem="GSv-Ac-Tip" secondAttribute="leading" id="pQ8-0x-Kh5"/>
-                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="top" secondItem="xS2-LB-4Gm" secondAttribute="bottom" id="vxf-UT-yeB"/>
-                            <constraint firstItem="GSv-Ac-Tip" firstAttribute="bottom" secondItem="bDq-ar-Nlp" secondAttribute="bottom" id="zMd-iv-ele"/>
+                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="leading" secondItem="GSv-Ac-Tip" secondAttribute="leading" id="78J-Ye-jgz"/>
+                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="top" secondItem="GSv-Ac-Tip" secondAttribute="top" constant="30" id="I5i-i1-lMb"/>
+                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="top" secondItem="xS2-LB-4Gm" secondAttribute="bottom" id="Lws-D3-7UE"/>
+                            <constraint firstItem="xS2-LB-4Gm" firstAttribute="trailing" secondItem="GSv-Ac-Tip" secondAttribute="trailing" id="TTK-DZ-Nz9"/>
+                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="leading" secondItem="GSv-Ac-Tip" secondAttribute="leading" id="YTf-xM-RKH"/>
+                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="bottom" secondItem="GSv-Ac-Tip" secondAttribute="bottom" id="dQf-ht-fEQ"/>
+                            <constraint firstItem="bDq-ar-Nlp" firstAttribute="trailing" secondItem="GSv-Ac-Tip" secondAttribute="trailing" id="o4l-g0-OZf"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="vRl-9i-1Ya"/>
@@ -226,23 +226,22 @@
                                                     <color key="textColor" name="TextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6SJ-Dq-udC">
-                                                    <rect key="frame" x="25" y="40.333333333333336" width="50" height="40.000000000000007"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6SJ-Dq-udC">
+                                                    <rect key="frame" x="20" y="30.333333333333329" width="60" height="60"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="40" id="V9v-W3-3bY"/>
-                                                        <constraint firstAttribute="width" constant="50" id="sRO-yb-pLH"/>
+                                                        <constraint firstAttribute="width" constant="60" id="7MO-tX-IAV"/>
+                                                        <constraint firstAttribute="height" constant="60" id="vIO-LZ-0cz"/>
                                                     </constraints>
                                                 </imageView>
                                             </subviews>
                                             <color key="backgroundColor" name="Background"/>
                                             <constraints>
-                                                <constraint firstItem="6SJ-Dq-udC" firstAttribute="top" secondItem="YXE-ZT-4hT" secondAttribute="bottom" constant="15" id="0kf-NO-mU8"/>
+                                                <constraint firstItem="ZCp-UG-6Qh" firstAttribute="top" secondItem="6SJ-Dq-udC" secondAttribute="bottom" constant="5" id="2iY-Wy-gCV"/>
                                                 <constraint firstItem="ZCp-UG-6Qh" firstAttribute="leading" secondItem="bf0-DV-8hL" secondAttribute="leading" constant="22.670000000000002" id="5xk-ie-IIr"/>
-                                                <constraint firstItem="6SJ-Dq-udC" firstAttribute="centerX" secondItem="bf0-DV-8hL" secondAttribute="centerX" id="H85-ZV-FUC"/>
                                                 <constraint firstItem="YXE-ZT-4hT" firstAttribute="top" secondItem="bf0-DV-8hL" secondAttribute="top" constant="5" id="IPN-QJ-yfv"/>
                                                 <constraint firstAttribute="trailing" secondItem="ZCp-UG-6Qh" secondAttribute="trailing" constant="22.329999999999998" id="MB2-b2-3Ti"/>
+                                                <constraint firstItem="6SJ-Dq-udC" firstAttribute="top" secondItem="YXE-ZT-4hT" secondAttribute="bottom" constant="5" id="o9Z-Rb-2PC"/>
                                                 <constraint firstItem="YXE-ZT-4hT" firstAttribute="centerX" secondItem="bf0-DV-8hL" secondAttribute="centerX" id="sKW-G7-86M"/>
-                                                <constraint firstItem="ZCp-UG-6Qh" firstAttribute="top" secondItem="6SJ-Dq-udC" secondAttribute="bottom" constant="15" id="sob-RT-3iQ"/>
                                             </constraints>
                                         </collectionViewCellContentView>
                                         <color key="backgroundColor" name="Background"/>
@@ -413,7 +412,7 @@
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <image name="xmark.circle" catalog="system" width="128" height="123"/>
         <namedColor name="Background">
-            <color red="0.14100000262260437" green="0.086000002920627594" blue="0.39599999785423279" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <color red="0.14117647058823529" green="0.086274509803921567" blue="0.396078431372549" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
         <namedColor name="CellColor">
             <color red="0.10199999809265137" green="0.063000001013278961" blue="0.29899999499320984" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
