@@ -52,6 +52,8 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         
         weatherTableView.separatorColor = UIColor(named: "Background")
         
+        
+        
         if let selectedCity = selectedCity {
                print("Seçilen şehir: \(selectedCity)") // Debugging output
                Task {

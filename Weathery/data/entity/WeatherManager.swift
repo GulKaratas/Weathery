@@ -1,4 +1,5 @@
 import Foundation
+import UserNotifications // Bildirimler için gerekli
 
 // Hava durumu verilerini modellemek için yapılar
 struct WeatherData: Codable {
@@ -73,6 +74,33 @@ struct WeatherManager {
     // Günlük hava durumu tahmini
     let weeklyWeatherURL = "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude=hourly,minutely&appid={apiKey}&units=metric"
     
+    // Bildirim gönderme fonksiyonu
+    func scheduleWeatherNotification(temperature: Double) {
+        let content = UNMutableNotificationContent()
+        content.title = "Hava Durumu Hatırlatıcı"
+        
+        if temperature < 5 {
+            content.body = "Bugün hava çok soğuk, kalın giyinmeyi unutma!"
+        } else if temperature < 15 {
+            content.body = "Bugün hava serin, uygun giyin."
+        } else {
+            content.body = "Bugün hava güzel, hafif giyinebilirsin!"
+        }
+        
+        content.sound = UNNotificationSound.default
+        
+        // Bildirim zamanlaması (örneğin, 5 saniye sonra)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Bildirim gönderilemedi: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     // Hava durumu verilerini getiren fonksiyon
     func fetchWeather(lat: Double, lon: Double) async throws -> [HourlyWeather] {
         let urlString = "https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&appid=\(apiKey)&units=metric"
@@ -88,6 +116,10 @@ struct WeatherManager {
             }
             if httpResponse.statusCode == 200 {
                 let weatherData = try JSONDecoder().decode(WeatherData.self, from: data)
+                // Hava durumu verisini al ve bildirim gönder
+                if let firstWeather = weatherData.list.first {
+                    scheduleWeatherNotification(temperature: firstWeather.main.temp)
+                }
                 return weatherData.list
             } else {
                 let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
