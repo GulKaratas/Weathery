@@ -7,6 +7,7 @@ Bu iOS uygulaması, kullanıcılara günlük ve haftalık hava durumu tahmini il
 - **Günlük Hava Durumu**: Gün içinde saatlik hava durumu tahminlerini CollectionView içinde listeler.
 - **Haftalık Hava Durumu Tahmini**: Kullanıcılar haftalık hava durumu tahminlerini görüntüleyebilir.
 - **Hava Kalitesi Bilgisi**: Hava kalitesi verileri TableView içinde gösterilmektedir.
+- **Favoriler**: Kullanıcılar favori şehirlerini kaydedebilir; bu veriler UserDefaults ile saklanır.
 - **Kişiselleştirilmiş Anlık Uyarılar**: Hava durumu veya hava kalitesinde önemli bir değişiklik olduğunda kullanıcıları bilgilendirir.
 - **Widget Desteği**: Ana ekrandan hızlıca hava durumu ve hava kalitesi bilgilerine erişim sağlar.
 
@@ -31,5 +32,6 @@ Projede kullanılan başlıca teknolojiler:
 - **MVVM Mimarisi**: Projede katmanlı yapı ve sürdürülebilirlik için MVVM mimarisi kullanılmıştır.
 - **Restful API**: OpenWeather API kullanılarak hava durumu ve hava kalitesi bilgileri alınmaktadır.
 - **Kişiselleştirilmiş Bildirimler**: Kullanıcıların konumuna göre özel bildirimler ve hava durumu uyarıları gönderilir.
+- **UserDefaults**: Favori şehirlerin kaydedilmesi ve saklanması için kullanılmıştır.
 - **Unit Test**: Uygulamanın bazı bölümleri Unit Test ile test edilmiştir.
 - **Widget Desteği**: Ana ekrandan hızlı bilgi sağlayan widget desteği içerir.
