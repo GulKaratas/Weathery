@@ -9,22 +9,31 @@ class Favorites: UIViewController {
     let weatherManager = WeatherManager()
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        favoritesCollectionView.dataSource = self
-        favoritesCollectionView.delegate = self
-        
-        configureCollectionViewLayout()
-        loadFavorites()
-        
-        // Add observer to listen for updates
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshFavorites), name: .favoriteCityAdded, object: nil)
-    }
+           super.viewDidLoad()
+           
+           favoritesCollectionView.dataSource = self
+           favoritesCollectionView.delegate = self
+           
+           configureCollectionViewLayout()
+           loadFavorites()
+           
+           // Add observer to listen for updates
+           NotificationCenter.default.addObserver(self, selector: #selector(refreshFavorites), name: .favoriteCityAdded, object: nil)
+       }
 
-    @objc func refreshFavorites() {
-        loadFavorites() // Reloads the favorites from UserDefaults
-        favoritesCollectionView.reloadData() // Updates the collection view
-    }
+       @objc func refreshFavorites(notification: Notification) {
+           if let newCity = notification.object as? String {
+               if !favoriteCities.contains(newCity) {
+                   favoriteCities.append(newCity)
+                   saveFavorites()
+                   favoritesCollectionView.reloadData()
+               }
+           }
+       }
+
+       deinit {
+           NotificationCenter.default.removeObserver(self)
+       }
 
     @IBAction func removeButton(_ sender: UIButton) {
         // Hangi şehir seçili olduğunu bul
@@ -50,6 +59,7 @@ class Favorites: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
+    
     func saveFavorites() {
         UserDefaults.standard.set(favoriteCities, forKey: "FavoriteCities")
     }
@@ -159,8 +169,22 @@ extension Favorites: UICollectionViewDataSource, UICollectionViewDelegate {
 
 extension UICollectionViewCell {
     func configureAppearance() {
-        self.layer.borderColor = UIColor.gray.cgColor
-        self.layer.borderWidth = 0.5
-        self.layer.cornerRadius = 10.0
+            // Set background color to CellColor
+            self.backgroundColor = UIColor(named: "CellColor")
+            
+            // Border styling
+            self.layer.borderColor = UIColor.black.cgColor
+            self.layer.borderWidth = 1.0
+            self.layer.cornerRadius = 15.0
+            
+            // Shadow styling for a 3D effect
+            self.layer.shadowColor = UIColor.black.cgColor
+            self.layer.shadowOpacity = 0.3
+            self.layer.shadowOffset = CGSize(width: 3, height: 3)
+            self.layer.shadowRadius = 5
+            
+            // To make shadow and corner radius work together, use a separate shadow path
+            self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: self.layer.cornerRadius).cgPath
+            self.layer.masksToBounds = false
     }
 }

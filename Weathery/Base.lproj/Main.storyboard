@@ -226,7 +226,7 @@
                                                     <color key="textColor" name="TextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6SJ-Dq-udC">
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6SJ-Dq-udC">
                                                     <rect key="frame" x="20" y="30.333333333333329" width="60" height="60"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="7MO-tX-IAV"/>
@@ -240,6 +240,7 @@
                                                 <constraint firstItem="ZCp-UG-6Qh" firstAttribute="leading" secondItem="bf0-DV-8hL" secondAttribute="leading" constant="22.670000000000002" id="5xk-ie-IIr"/>
                                                 <constraint firstItem="YXE-ZT-4hT" firstAttribute="top" secondItem="bf0-DV-8hL" secondAttribute="top" constant="5" id="IPN-QJ-yfv"/>
                                                 <constraint firstAttribute="trailing" secondItem="ZCp-UG-6Qh" secondAttribute="trailing" constant="22.329999999999998" id="MB2-b2-3Ti"/>
+                                                <constraint firstItem="6SJ-Dq-udC" firstAttribute="centerX" secondItem="bf0-DV-8hL" secondAttribute="centerX" id="OyW-7w-EaZ"/>
                                                 <constraint firstItem="6SJ-Dq-udC" firstAttribute="top" secondItem="YXE-ZT-4hT" secondAttribute="bottom" constant="5" id="o9Z-Rb-2PC"/>
                                                 <constraint firstItem="YXE-ZT-4hT" firstAttribute="centerX" secondItem="bf0-DV-8hL" secondAttribute="centerX" id="sKW-G7-86M"/>
                                             </constraints>
@@ -412,10 +413,10 @@
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <image name="xmark.circle" catalog="system" width="128" height="123"/>
         <namedColor name="Background">
-            <color red="0.14117647058823529" green="0.086274509803921567" blue="0.396078431372549" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <color red="0.11999999731779099" green="0.51800000667572021" blue="0.76599997282028198" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
         <namedColor name="CellColor">
-            <color red="0.10199999809265137" green="0.063000001013278961" blue="0.29899999499320984" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <color red="0.12999999523162842" green="0.56000000238418579" blue="0.82800000905990601" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
         <namedColor name="TextColor">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

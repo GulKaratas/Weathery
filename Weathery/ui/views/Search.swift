@@ -57,13 +57,11 @@ class Search: UIViewController {
         UserDefaults.standard.set(favoriteCities, forKey: "FavoriteCities")
     }
 
-    // Function to show alert
     func showAlert(with message: String) {
         DispatchQueue.main.async { // Ensure it runs on the main thread
             let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
             self.present(alert, animated: true)
 
-            // Dismiss the alert after 2 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 alert.dismiss(animated: true, completion: nil)
             }
@@ -98,7 +96,6 @@ extension Search: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    // Swipe actions for each row
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let city = filteredCities[indexPath.row]
         
@@ -109,11 +106,12 @@ extension Search: UITableViewDataSource, UITableViewDelegate {
                 
                 // Show alert when a city is added to favorites
                 self.showAlert(with: "\(city) favorilere eklendi.")
-                print("\(city) favorilere eklendi.")
+                
+                // Notify Favorites view to update
+                NotificationCenter.default.post(name: .favoriteCityAdded, object: city)
             } else {
                 // Show alert when trying to add a city that's already a favorite
                 self.showAlert(with: "\(city) favorilere eklenmişti.")
-                print("\(city) is already in favorites.")
             }
             completionHandler(true)
         }

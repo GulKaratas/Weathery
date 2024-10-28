@@ -68,33 +68,38 @@ struct AirQualityData: Codable {
 
 // Hava durumu ve hava kalitesi verilerini yöneten sınıf
 struct WeatherManager {
-    // OpenWeatherMap API anahtarınızı buraya ekleyin
-    let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74" 
+    let apiKey = "b01cd30abbdb6bb286ae3ec6dfb6d7eb"
     
-    let weatherURL = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={apiKey}&units=metric"
+    // Günlük hava durumu tahmini
     let weeklyWeatherURL = "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude=hourly,minutely&appid={apiKey}&units=metric"
     
     // Hava durumu verilerini getiren fonksiyon
     func fetchWeather(lat: Double, lon: Double) async throws -> [HourlyWeather] {
-        let urlString = weatherURL
-            .replacingOccurrences(of: "{lat}", with: String(lat))
-            .replacingOccurrences(of: "{lon}", with: String(lon))
-            .replacingOccurrences(of: "{apiKey}", with: apiKey)
+        let urlString = "https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&appid=\(apiKey)&units=metric"
         
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }
 
-        let (data, response) = try await URLSession.shared.data(from: url)
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw URLError(.badServerResponse)
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw URLError(.badServerResponse)
+            }
+            if httpResponse.statusCode == 200 {
+                let weatherData = try JSONDecoder().decode(WeatherData.self, from: data)
+                return weatherData.list
+            } else {
+                let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
+                print("Günlük hava durumu alırken hata: \(httpResponse.statusCode) - \(errorMessage)")
+                throw URLError(.badServerResponse)
+            }
+        } catch {
+            print("Günlük hava durumu alırken hata: \(error.localizedDescription)")
+            throw error
         }
-
-        let weatherData = try JSONDecoder().decode(WeatherData.self, from: data)
-        return weatherData.list
     }
     
-    // Haftalık hava durumu verilerini getiren fonksiyon
     // Haftalık hava durumu verilerini getiren fonksiyon
     func fetchWeeklyWeather(lat: Double, lon: Double) async throws -> [DailyWeather] {
         let urlString = weeklyWeatherURL
@@ -106,25 +111,24 @@ struct WeatherManager {
             throw URLError(.badURL)
         }
 
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw URLError(.badServerResponse)
+            }
+            if httpResponse.statusCode == 200 {
+                let weeklyWeatherData = try JSONDecoder().decode(WeeklyWeatherData.self, from: data)
+                return weeklyWeatherData.daily
+            } else {
+                let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
+                print("Haftalık hava durumu alırken hata: \(httpResponse.statusCode) - \(errorMessage)")
+                throw URLError(.badServerResponse)
+            }
+        } catch {
+            print("Haftalık hava durumu alırken hata: \(error.localizedDescription)")
+            throw error
         }
-
-        if httpResponse.statusCode != 200 {
-            let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
-            print("Hata: \(httpResponse.statusCode) - \(errorMessage)")
-            throw URLError(.badServerResponse)
-        }
-
-        // Yanıt verisini konsola yazdır
-        print("Yanıt Verisi: \(String(data: data, encoding: .utf8) ?? "Veri yok")")
-
-        let weeklyWeatherData = try JSONDecoder().decode(WeeklyWeatherData.self, from: data)
-        return weeklyWeatherData.daily
     }
-
 
     // Hava kalitesi verilerini getiren fonksiyon
     func fetchAirQuality(lat: Double, lon: Double) async throws -> AirQualityData {
@@ -134,19 +138,23 @@ struct WeatherManager {
             throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Geçersiz URL"])
         }
 
-        let (data, response) = try await URLSession.shared.data(from: url)
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Yanıt geçersiz"])
+            }
 
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Yanıt geçersiz"])
+            if httpResponse.statusCode == 200 {
+                let airQuality = try JSONDecoder().decode(AirQualityData.self, from: data)
+                return airQuality
+            } else {
+                let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
+                print("Hava kalitesi alırken hata: \(httpResponse.statusCode) - \(errorMessage)")
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Hava kalitesi verisi alırken hata: \(errorMessage)"])
+            }
+        } catch {
+            print("Hava kalitesi alırken hata: \(error.localizedDescription)")
+            throw error
         }
-
-        guard httpResponse.statusCode == 200 else {
-            let errorMessage = String(data: data, encoding: .utf8) ?? "Veri yok"
-            print("Hava kalitesi alırken hata: \(httpResponse.statusCode) - \(errorMessage)")
-            throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Hava kalitesi verisi alırken hata: \(errorMessage)"])
-        }
-
-        let airQuality = try JSONDecoder().decode(AirQualityData.self, from: data)
-        return airQuality
     }
 }

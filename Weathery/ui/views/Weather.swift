@@ -38,6 +38,9 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         setupSegmentedControl()
         setupLocationManager()
         
+        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        
         print("Seçilen şehir: \(selectedCity ?? "Şehir Seçilmedi")") // Debugging output
         cityLabel.text = selectedCity ?? "Şehir Seçilmedi"  // Şehir etiketi burada güncelleniyor.
         
@@ -94,34 +97,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     func fetchWeatherData(for lat: Double, lon: Double) async throws {
         // Tüm saatlik hava verilerini al
         hourlyWeatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
-
-        // Şu anki tarihi ve saati al
-        let now = Date()
-        let calendar = Calendar.current
-        
-        // Şu anki saati 1 saat ileriye al (örneğin, 12:30 ise 13:00 yap)
-        var nextHour = calendar.date(byAdding: .hour, value: 1, to: now)!
-        
-        // Saat başına yuvarlamak için dakika ve saniyeleri sıfırla
-        nextHour = calendar.date(bySettingHour: calendar.component(.hour, from: nextHour),
-                                  minute: 0,
-                                  second: 0,
-                                  of: nextHour)!
-
-        // 24 saat sonra hangi tarih olduğunu hesapla
-        let twentyFourHoursLater = calendar.date(byAdding: .hour, value: 24, to: nextHour)!
-        
-        // Saatlik verileri filtrele
-        hourlyWeatherData = hourlyWeatherData.filter { hourlyWeather in
-            let hourDate = Date(timeIntervalSince1970: TimeInterval(hourlyWeather.dt))
-            return hourDate >= nextHour && hourDate <= twentyFourHoursLater
-        }
-
-        // Sadece 24 saatlik veriyi tut
-        if hourlyWeatherData.count > 24 {
-            hourlyWeatherData = Array(hourlyWeatherData.prefix(24))
-        }
-
+    
         // UI'yı güncelle
         DispatchQueue.main.async {
             if let firstWeather = self.hourlyWeatherData.first {
@@ -300,11 +276,11 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         Task {
             do {
                 self.hourlyWeatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
-                
-                // Hava durumu açıklamasını alın ve Türkçeye çevirin
+
+                // Translate weather description
                 let weatherCondition = self.hourlyWeatherData.first?.weather.first?.description ?? "N/A"
                 let translatedCondition: String
-                
+
                 switch weatherCondition.lowercased() {
                 case "clear sky":
                     translatedCondition = "Açık"
@@ -326,15 +302,39 @@ class Weather: UIViewController, CLLocationManagerDelegate {
                     translatedCondition = "Sisli"
                 case "light rain":
                     translatedCondition = "Hafif Yağmurlu"
-                case "Overcast Clouds ":
+                case "overcast clouds":
                     translatedCondition = "Kapalı Bulutlu"
+                case "moderate rain":
+                    translatedCondition = "Orta Şiddetli Yağmur"
+                case "heavy intensity rain":
+                    translatedCondition = "Yoğun Yağmur"
+                case "very heavy rain":
+                    translatedCondition = "Çok Yoğun Yağmur"
+                case "extreme rain":
+                    translatedCondition = "Aşırı Yağmur"
+                case "freezing rain":
+                    translatedCondition = "Dondurucu Yağmur"
+                case "light snow":
+                    translatedCondition = "Hafif Kar Yağışlı"
+                case "heavy snow":
+                    translatedCondition = "Yoğun Kar Yağışlı"
+                case "sleet":
+                    translatedCondition = "Sulu Kar"
+                case "shower sleet":
+                    translatedCondition = "Sağanak Sulu Kar"
+                case "light shower sleet":
+                    translatedCondition = "Hafif Sağanak Sulu Kar"
+                case "light shower rain":
+                    translatedCondition = "Hafif Sağanak Yağmur"
+                case "ragged shower rain":
+                    translatedCondition = "Parçalı Sağanak Yağmur"
                 default:
                     translatedCondition = weatherCondition.capitalized
                 }
-                
+
                 DispatchQueue.main.async {
                     self.degreeLabel.text = "\(Int(self.hourlyWeatherData.first?.main.temp ?? 0)) °"
-                    self.airLabel.text = translatedCondition // Hava durumunu Türkçeye çevirilmiş olarak göster
+                    self.airLabel.text = translatedCondition
                     self.updateUIForCurrentDay()
                     self.weatherCollectionView.reloadData()
                 }
@@ -344,18 +344,19 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         }
     }
 
- 
 
-    func reverseGeocodeLocation(location: CLLocation) {
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
-            if let error = error {
-                print("Error in reverse geocoding: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let placemark = placemarks?.first, let city = placemark.locality else {
-                print("City not found")
+   
+
+      func reverseGeocodeLocation(location: CLLocation) {
+          let geocoder = CLGeocoder()
+          geocoder.reverseGeocodeLocation(location) { [weak self] (placemarks, error) in
+              if let error = error {
+                  print("Error in reverse geocoding: \(error.localizedDescription)")
+                  return
+              }
+              
+              guard let placemark = placemarks?.first, let city = placemark.locality else {
+                  print("City not found")
                 return
             }
             
