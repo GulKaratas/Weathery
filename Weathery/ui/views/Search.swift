@@ -58,7 +58,7 @@ class Search: UIViewController {
     }
 
     func showAlert(with message: String) {
-        DispatchQueue.main.async { // Ensure it runs on the main thread
+        DispatchQueue.main.async {
             let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
             self.present(alert, animated: true)
 
@@ -104,13 +104,13 @@ extension Search: UITableViewDataSource, UITableViewDelegate {
                 self.favoriteCities.append(city)
                 self.saveFavorites()
                 
-                // Show alert when a city is added to favorites
+               
                 self.showAlert(with: "\(city) favorilere eklendi.")
                 
-                // Notify Favorites view to update
+                
                 NotificationCenter.default.post(name: .favoriteCityAdded, object: city)
             } else {
-                // Show alert when trying to add a city that's already a favorite
+                
                 self.showAlert(with: "\(city) favorilere eklenmişti.")
             }
             completionHandler(true)

@@ -1,5 +1,5 @@
 import Foundation
-import UserNotifications // Bildirimler için gerekli
+import UserNotifications  
 
 // Hava durumu verilerini modellemek için yapılar
 struct WeatherData: Codable {
@@ -89,7 +89,7 @@ struct WeatherManager {
         
         content.sound = UNNotificationSound.default
         
-        // Bildirim zamanlaması (örneğin, 5 saniye sonra)
+        // Bildirim zamanlaması
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
         
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)

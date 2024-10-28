@@ -17,7 +17,7 @@ class Favorites: UIViewController {
            configureCollectionViewLayout()
            loadFavorites()
            
-           // Add observer to listen for updates
+           
            NotificationCenter.default.addObserver(self, selector: #selector(refreshFavorites), name: .favoriteCityAdded, object: nil)
        }
 
@@ -169,21 +169,21 @@ extension Favorites: UICollectionViewDataSource, UICollectionViewDelegate {
 
 extension UICollectionViewCell {
     func configureAppearance() {
-            // Set background color to CellColor
+           
             self.backgroundColor = UIColor(named: "CellColor")
             
-            // Border styling
+            
             self.layer.borderColor = UIColor.black.cgColor
             self.layer.borderWidth = 1.0
             self.layer.cornerRadius = 15.0
             
-            // Shadow styling for a 3D effect
+            
             self.layer.shadowColor = UIColor.black.cgColor
             self.layer.shadowOpacity = 0.3
             self.layer.shadowOffset = CGSize(width: 3, height: 3)
             self.layer.shadowRadius = 5
             
-            // To make shadow and corner radius work together, use a separate shadow path
+            
             self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: self.layer.cornerRadius).cgPath
             self.layer.masksToBounds = false
     }

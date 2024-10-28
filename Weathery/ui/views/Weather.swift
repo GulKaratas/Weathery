@@ -28,7 +28,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     ]
 
     
-    // Hava kalitesi verilerini yöneten bir yapı oluşturun
+    
     var airQualityData: AirQualityData?
 
     private let defaultIcon = "defaultIcon"
@@ -41,8 +41,8 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
         
-        print("Seçilen şehir: \(selectedCity ?? "Şehir Seçilmedi")") // Debugging output
-        cityLabel.text = selectedCity ?? "Şehir Seçilmedi"  // Şehir etiketi burada güncelleniyor.
+        print("Seçilen şehir: \(selectedCity ?? "Şehir Seçilmedi")")
+        cityLabel.text = selectedCity ?? "Şehir Seçilmedi"
         
         weatherCollectionView.delegate = self
         weatherCollectionView.dataSource = self
@@ -55,7 +55,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         
         
         if let selectedCity = selectedCity {
-               print("Seçilen şehir: \(selectedCity)") // Debugging output
+               print("Seçilen şehir: \(selectedCity)")
                Task {
                    do {
                        let coordinates = try await fetchCoordinates(for: selectedCity)
@@ -67,9 +67,9 @@ class Weather: UIViewController, CLLocationManagerDelegate {
                }
            }
         if let layout = weatherCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.scrollDirection = .horizontal // Horizontal scrolling
-            layout.minimumLineSpacing = 10 // Spacing between cells
-            layout.itemSize = CGSize(width: view.bounds.width * 0.8, height: view.bounds.height * 0.5) // Dynamic cell size
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = 10
+            layout.itemSize = CGSize(width: view.bounds.width * 0.8, height: view.bounds.height * 0.5)
         }
     }
     
@@ -97,10 +97,10 @@ class Weather: UIViewController, CLLocationManagerDelegate {
     
 
     func fetchWeatherData(for lat: Double, lon: Double) async throws {
-        // Tüm saatlik hava verilerini al
+       
         hourlyWeatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
     
-        // UI'yı güncelle
+        
         DispatchQueue.main.async {
             if let firstWeather = self.hourlyWeatherData.first {
                 self.degreeLabel.text = "\(Int(firstWeather.main.temp)) °"
@@ -112,7 +112,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
 
 
     func fetchCoordinates(for cityName: String) async throws -> (lat: Double, lon: Double) {
-        let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74" // Buraya geçerli API anahtarınızı koyun
+        let apiKey = "2bdf7ae26311d6b4029bfe9b2e71ce74"
         let encodedCityName = cityName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlString = "https://api.openweathermap.org/data/2.5/weather?q=\(encodedCityName)&appid=\(apiKey)"
         
@@ -145,28 +145,28 @@ class Weather: UIViewController, CLLocationManagerDelegate {
 
     @IBAction func segmentedControlChanged(_ sender: UISegmentedControl) {
         Task {
-            // Initialize lat and lon with default values
+            
             var lat: Double = 0
             var lon: Double = 0
             
             if let selectedCity = selectedCity {
-                // If a city is selected, fetch weather data for that city
+               
                 do {
                     let coordinates = try await fetchCoordinates(for: selectedCity)
                     lat = coordinates.lat
                     lon = coordinates.lon
                 } catch {
                     print("Error fetching coordinates for selected city: \(error.localizedDescription)")
-                    return // Exit early if there is an error
+                    return
                 }
             } else {
-                // Use the current location if no city is selected
+                
                 if let location = locationManager.location {
                     lat = location.coordinate.latitude
                     lon = location.coordinate.longitude
                 } else {
                     print("Current location is not available.")
-                    return // Exit if location is not available
+                    return
                 }
             }
             
@@ -264,13 +264,13 @@ class Weather: UIViewController, CLLocationManagerDelegate {
         let lat = location.coordinate.latitude
         let lon = location.coordinate.longitude
         
-        // Hava durumu verilerini al
+        
         fetchWeatherData(lat: lat, lon: lon)
         
-        // Hava kalitesi verilerini al
+        
         fetchAirQualityData(lat: lat, lon: lon)
         
-        // Şehir adını al
+        
         reverseGeocodeLocation(location: location)
     }
     
@@ -406,7 +406,7 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         if segmentedControl.selectedSegmentIndex == 0 {
             // Hourly weather data
             guard indexPath.item < hourlyWeatherData.count else {
-                return cell // Return an empty cell if the index exceeds the array
+                return cell
             }
             
             let hourlyWeather = hourlyWeatherData[indexPath.item]
@@ -420,7 +420,7 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         } else {
             // Daily weather data
             guard indexPath.item < dailyWeatherData.count else {
-                return cell // Return an empty cell if the index exceeds the array
+                return cell
             }
             
             let dailyWeather = dailyWeatherData[indexPath.item]
@@ -429,8 +429,8 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
             // Get the day of the week
             let date = Date(timeIntervalSince1970: TimeInterval(dailyWeather.dt))
             let dayFormatter = DateFormatter()
-            dayFormatter.locale = Locale(identifier: "tr_TR") // Set locale for Turkish
-            dayFormatter.dateFormat = "EEEE" // Full day name format
+            dayFormatter.locale = Locale(identifier: "tr_TR")
+            dayFormatter.dateFormat = "EEEE"
             cell.timeLabel.text = dayFormatter.string(from: date)
             
             let iconName = dailyWeather.weather.first?.icon ?? defaultIcon
@@ -475,7 +475,7 @@ extension Weather: UICollectionViewDelegate, UICollectionViewDataSource {
         let date = Date(timeIntervalSince1970: TimeInterval(unixTime))
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "tr_TR")
-        dateFormatter.dateFormat = "HH:mm" // Hour and minute format
+        dateFormatter.dateFormat = "HH:mm"
         return dateFormatter.string(from: date)
     }
 
@@ -514,14 +514,14 @@ extension Weather: UITableViewDelegate, UITableViewDataSource {
         let (propertyName, label) = airQualityProperties[indexPath.row]
         cell.nameLabel.text = "\(propertyName)"
         
-        // Displaying custom images for air quality and wind speed
+        
         switch indexPath.row {
-        case 0: // Air Quality
+        case 0:
             cell.detailsLabel.text = "\(label)\(airQuality.main.aqi)"
-            cell.detailsImageView.image = UIImage(named: "havaKalitesi") // Local image for air quality
-        case 1: // Wind Speed
+            cell.detailsImageView.image = UIImage(named: "havaKalitesi")
+        case 1:
             cell.detailsLabel.text = "\(label)\(10) m/s"
-            cell.detailsImageView.image = UIImage(named: "ruzgarHizi") // Local image for wind speed
+            cell.detailsImageView.image = UIImage(named: "ruzgarHizi")
         case 2:
             cell.detailsLabel.text = "\(label)\(airQuality.components.co) µg/m³"
             loadIcon(for: "co", into: cell)
@@ -571,9 +571,9 @@ extension Weather: UITableViewDelegate, UITableViewDataSource {
         case "o3":
             iconCode = "01d"
         case "wind":
-            iconCode = "wind_icon_code" // Placeholder for a wind icon code
+            iconCode = "wind_icon_code" 
         case "aqi":
-            iconCode = "aqi_icon_code" // Placeholder for an AQI icon code
+            iconCode = "aqi_icon_code"
         default:
             iconCode = "01d"
         }
