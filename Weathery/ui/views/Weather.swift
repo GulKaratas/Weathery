@@ -220,7 +220,7 @@ class Weather: UIViewController, CLLocationManagerDelegate {
 
     func iconURL(iconName: String) -> URL? {
         let baseURL = "https://openweathermap.org/img/wn/"
-        let iconSize = "@2x.png" // Boyutu ihtiyacınıza göre ayarlayabilirsiniz.
+        let iconSize = "@2x.png" 
         let fullURL = baseURL + iconName + iconSize
         return URL(string: fullURL)
     }

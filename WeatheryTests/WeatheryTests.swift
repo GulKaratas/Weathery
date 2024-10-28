@@ -9,28 +9,81 @@ import XCTest
 @testable import Weathery
 
 final class WeatheryTests: XCTestCase {
-
+    
+    var weatherManager: WeatherManager!
+    
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        // Initialize the WeatherManager before each test
+        weatherManager = WeatherManager()
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        // Clean up after each test
+        weatherManager = nil
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func testFetchWeather() async throws {
+        // This test should mock the response from OpenWeather API
+        let lat = 37.7749
+        let lon = -122.4194
+        
+        // You may want to use a mocking library or method to simulate a response here.
+        // For now, we'll call the actual function which will fail if there's no internet.
+        do {
+            let weatherData = try await weatherManager.fetchWeather(lat: lat, lon: lon)
+            XCTAssertNotNil(weatherData)
+            XCTAssertFalse(weatherData.isEmpty)
+            // Check properties of the returned weather data
+            let firstWeather = weatherData[0]
+            XCTAssertEqual(firstWeather.main.temp, Double(Int(firstWeather.main.temp))) // Example of checking temp format
+        } catch {
+            XCTFail("Fetching weather data failed with error: \(error)")
+        }
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    func testFetchWeeklyWeather() async throws {
+        // This test should also mock the response from OpenWeather API
+        let lat = 37.7749
+        let lon = -122.4194
+        
+        do {
+            let weeklyWeatherData = try await weatherManager.fetchWeeklyWeather(lat: lat, lon: lon)
+            XCTAssertNotNil(weeklyWeatherData)
+            XCTAssertFalse(weeklyWeatherData.isEmpty)
+            // Check properties of the returned weekly weather data
+            let firstDailyWeather = weeklyWeatherData[0]
+            XCTAssertEqual(firstDailyWeather.temp.day, Double(Int(firstDailyWeather.temp.day))) // Example of checking day's temp format
+        } catch {
+            XCTFail("Fetching weekly weather data failed with error: \(error)")
         }
     }
 
+    func testFetchAirQuality() async throws {
+        // This test should also mock the response from OpenWeather API
+        let lat = 37.7749
+        let lon = -122.4194
+        
+        do {
+            let airQualityData = try await weatherManager.fetchAirQuality(lat: lat, lon: lon)
+            XCTAssertNotNil(airQualityData)
+            XCTAssertFalse(airQualityData.list.isEmpty)
+            // Check properties of the returned air quality data
+            let firstAirQuality = airQualityData.list[0]
+            XCTAssertEqual(firstAirQuality.main.aqi, Int(firstAirQuality.main.aqi)) // Example of checking aqi format
+        } catch {
+            XCTFail("Fetching air quality data failed with error: \(error)")
+        }
+    }
+    
+    func testExample() throws {
+        // Example functional test case
+        XCTAssertTrue(true) // Replace with meaningful test
+    }
+
+    func testPerformanceExample() throws {
+        // Example performance test case
+        self.measure {
+            // Measure the time of some code
+        }
+    }
 }
